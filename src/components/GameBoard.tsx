@@ -14,6 +14,7 @@ type GameBoardProps = {
 }
 
 export function GameBoard({ onSaveScore }: GameBoardProps) {
+  const [isPlaying, setIsPlaying] = useState(false)
   const [questionIndex, setQuestionIndex] = useState(0)
   const [question, setQuestion] = useState<DivisionQuestion>(() => createDivisionQuestion())
   const [answerText, setAnswerText] = useState('')
@@ -34,17 +35,17 @@ export function GameBoard({ onSaveScore }: GameBoardProps) {
   }, [deadlineMs, isRoundFinished, now])
 
   useEffect(() => {
-    if (isRoundFinished) return
+    if (!isPlaying || isRoundFinished) return
     const timerId = window.setInterval(() => setNow(Date.now()), 100)
     return () => window.clearInterval(timerId)
-  }, [isRoundFinished])
+  }, [isPlaying, isRoundFinished])
 
   useEffect(() => {
-    if (isRoundFinished) return
+    if (!isPlaying || isRoundFinished) return
     if (secondsLeft <= 0) {
       advanceQuestion(false)
     }
-  }, [isRoundFinished, secondsLeft])
+  }, [isPlaying, isRoundFinished, secondsLeft])
 
   function startNextQuestion() {
     setQuestion(createDivisionQuestion())
@@ -67,7 +68,7 @@ export function GameBoard({ onSaveScore }: GameBoardProps) {
 
   function handleSubmitAnswer(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (isRoundFinished) return
+    if (!isPlaying || isRoundFinished) return
 
     const parsed = Number(answerText)
     const isCorrect = Number.isInteger(parsed) && parsed === question.answer
@@ -116,12 +117,37 @@ export function GameBoard({ onSaveScore }: GameBoardProps) {
     setPlayerName('')
     setSaveMessage(null)
     setDeadlineMs(startMs + QUESTION_TIME_LIMIT_SECONDS * 1000)
+    setIsPlaying(true)
+  }
+
+  function startRound() {
+    const startMs = Date.now()
+    questionStartMsRef.current = startMs
+    setQuestionIndex(0)
+    setQuestion(createDivisionQuestion())
+    setAnswerText('')
+    setScore(0)
+    setCorrectAnswers(0)
+    setFeedback(null)
+    setPlayerName('')
+    setSaveMessage(null)
+    setNow(startMs)
+    setDeadlineMs(startMs + QUESTION_TIME_LIMIT_SECONDS * 1000)
+    setIsPlaying(true)
   }
 
   return (
     <section className="panel game-panel">
       <h2>Spelplan</h2>
-      {!isRoundFinished && (
+      {!isPlaying && (
+        <>
+          <p>Klicka på start för att börja en ny runda.</p>
+          <button type="button" onClick={startRound}>
+            Starta spel
+          </button>
+        </>
+      )}
+      {isPlaying && !isRoundFinished && (
         <>
           <div className="stats">
             <p>Fråga: {questionIndex + 1}/{TOTAL_QUESTIONS}</p>

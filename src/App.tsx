@@ -3,6 +3,7 @@ import './App.css'
 import { GameBoard } from './components/GameBoard'
 import { HighscorePanel } from './components/HighscorePanel'
 import { type NewScoreInput, fetchHighscores, submitScore } from './lib/scores'
+import { hasSupabaseConfig } from './lib/supabase'
 
 function App() {
   const [scores, setScores] = useState<Awaited<ReturnType<typeof fetchHighscores>>>([])
@@ -10,6 +11,13 @@ function App() {
   const [scoresError, setScoresError] = useState<string | null>(null)
 
   const loadScores = useCallback(async () => {
+    if (!hasSupabaseConfig) {
+      setScoresError(
+        'Supabase saknas i deploy-miljön. Lägg till VITE_SUPABASE_URL och VITE_SUPABASE_ANON_KEY i GitHub Secrets.',
+      )
+      return
+    }
+
     setIsLoadingScores(true)
     setScoresError(null)
     try {
