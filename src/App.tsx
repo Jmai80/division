@@ -47,7 +47,7 @@ function App() {
     <main className="app">
       <header className="app-header">
         <h1>Divisionsracet</h1>
-        <p>Svara snabbt och korrekt for att samla fler poang.</p>
+        <p>Svara snabbt och korrekt för att samla fler poäng.</p>
       </header>
       <section className="layout">
         <GameBoard onSaveScore={handleSaveScore} />

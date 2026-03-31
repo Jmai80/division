@@ -60,7 +60,7 @@ export function GameBoard({ onSaveScore }: GameBoardProps) {
     if (wasCorrect) {
       setCorrectAnswers((prev) => prev + 1)
     } else {
-      setFeedback(`Tiden tog slut eller fel svar. Ratt svar var ${question.answer}.`)
+      setFeedback(`Tiden tog slut eller fel svar. Rätt svar var ${question.answer}.`)
     }
     startNextQuestion()
   }
@@ -80,7 +80,7 @@ export function GameBoard({ onSaveScore }: GameBoardProps) {
     const responseTimeSeconds = (Date.now() - questionStartMsRef.current) / 1000
     const points = calculatePoints(responseTimeSeconds)
     setScore((prev) => prev + points)
-    setFeedback(`Ratt! +${points} poang.`)
+    setFeedback(`Rätt! +${points} poäng.`)
     advanceQuestion(true)
   }
 
@@ -90,17 +90,15 @@ export function GameBoard({ onSaveScore }: GameBoardProps) {
 
     const trimmedName = playerName.trim()
     if (trimmedName.length < 2 || trimmedName.length > 20) {
-      setSaveMessage('Namn maste vara mellan 2 och 20 tecken.')
+      setSaveMessage('Namn måste vara mellan 2 och 20 tecken.')
       return
     }
 
     setIsSaving(true)
     setSaveMessage(null)
     const result = await onSaveScore({
-      player_name: trimmedName,
+      name: trimmedName,
       score,
-      correct_answers: correctAnswers,
-      total_questions: TOTAL_QUESTIONS,
     })
     setSaveMessage(result.message)
     setIsSaving(false)
@@ -126,8 +124,8 @@ export function GameBoard({ onSaveScore }: GameBoardProps) {
       {!isRoundFinished && (
         <>
           <div className="stats">
-            <p>Fraga: {questionIndex + 1}/{TOTAL_QUESTIONS}</p>
-            <p>Poang: {score}</p>
+            <p>Fråga: {questionIndex + 1}/{TOTAL_QUESTIONS}</p>
+            <p>Poäng: {score}</p>
             <p>Tid kvar: {secondsLeft.toFixed(1)} sek</p>
           </div>
           <p className="question">
@@ -150,10 +148,10 @@ export function GameBoard({ onSaveScore }: GameBoardProps) {
       {isRoundFinished && (
         <>
           <div className="stats">
-            <p>Rundan ar slut!</p>
-            <p>Total poang: {score}</p>
+            <p>Rundan är slut!</p>
+            <p>Total poäng: {score}</p>
             <p>
-              Ratt svar: {correctAnswers}/{TOTAL_QUESTIONS}
+              Rätt svar: {correctAnswers}/{TOTAL_QUESTIONS}
             </p>
           </div>
           <form onSubmit={handleSaveScore} className="row-form">
@@ -165,7 +163,7 @@ export function GameBoard({ onSaveScore }: GameBoardProps) {
               maxLength={20}
             />
             <button type="submit" disabled={isSaving}>
-              {isSaving ? 'Sparar...' : 'Spara poang'}
+              {isSaving ? 'Sparar...' : 'Spara poäng'}
             </button>
           </form>
           <button type="button" className="secondary-btn" onClick={restartRound}>

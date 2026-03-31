@@ -20,18 +20,15 @@ export function HighscorePanel({
       {errorMessage && <p className="error-text">{errorMessage}</p>}
 
       {!isLoading && !errorMessage && scores.length === 0 && (
-        <p>Inga poang sparade an.</p>
+        <p>Inga poäng sparade än.</p>
       )}
 
       {!isLoading && !errorMessage && scores.length > 0 && (
         <ol className="score-list">
-          {scores.map((entry) => (
-            <li key={entry.id}>
+          {scores.map((entry, index) => (
+            <li key={`${entry.name}-${entry.score}-${index}`}>
               <div>
-                <strong>{entry.player_name}</strong>
-                <small>
-                  {entry.correct_answers}/{entry.total_questions} ratt
-                </small>
+                <strong>{entry.name}</strong>
               </div>
               <span>{entry.score} p</span>
             </li>

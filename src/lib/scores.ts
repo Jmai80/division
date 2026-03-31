@@ -1,19 +1,14 @@
 import { supabase } from './supabase'
+const SCORE_TABLE = 'division_highscore'
 
 export type ScoreEntry = {
-  id: string
-  player_name: string
+  name: string
   score: number
-  correct_answers: number
-  total_questions: number
-  created_at: string
 }
 
 export type NewScoreInput = {
-  player_name: string
+  name: string
   score: number
-  correct_answers: number
-  total_questions: number
 }
 
 export async function fetchHighscores(limit = 10): Promise<ScoreEntry[]> {
@@ -22,14 +17,13 @@ export async function fetchHighscores(limit = 10): Promise<ScoreEntry[]> {
   }
 
   const { data, error } = await supabase
-    .from('scores')
-    .select('*')
+    .from(SCORE_TABLE)
+    .select('name, score')
     .order('score', { ascending: false })
-    .order('created_at', { ascending: true })
     .limit(limit)
 
   if (error) {
-    throw new Error(`Kunde inte hamta highscores: ${error.message}`)
+    throw new Error(`Kunde inte hämta highscores: ${error.message}`)
   }
 
   return data as ScoreEntry[]
@@ -40,9 +34,9 @@ export async function submitScore(payload: NewScoreInput): Promise<void> {
     throw new Error('Supabase saknas. Fyll i VITE_SUPABASE_URL och VITE_SUPABASE_ANON_KEY.')
   }
 
-  const { error } = await supabase.from('scores').insert(payload)
+  const { error } = await supabase.from(SCORE_TABLE).insert(payload)
 
   if (error) {
-    throw new Error(`Kunde inte spara poang: ${error.message}`)
+    throw new Error(`Kunde inte spara poäng: ${error.message}`)
   }
 }

@@ -19,7 +19,7 @@ npm run dev
 ```sql
 create extension if not exists pgcrypto;
 
-create table if not exists public.scores (
+create table if not exists public.division_highscore (
   id uuid primary key default gen_random_uuid(),
   player_name text not null check (char_length(player_name) between 2 and 20),
   score integer not null check (score >= 0),
@@ -28,16 +28,16 @@ create table if not exists public.scores (
   created_at timestamptz not null default now()
 );
 
-alter table public.scores enable row level security;
+alter table public.division_highscore enable row level security;
 
 create policy "Allow read scores"
-on public.scores
+on public.division_highscore
 for select
 to anon
 using (true);
 
 create policy "Allow insert scores"
-on public.scores
+on public.division_highscore
 for insert
 to anon
 with check (true);
